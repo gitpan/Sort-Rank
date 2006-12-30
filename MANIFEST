@@ -1,0 +1,12 @@
+Build.PL
+Changes
+MANIFEST
+META.yml # Will be created by "make dist"
+Makefile.PL
+README
+lib/Sort/Rank.pm
+t/00.load.t
+t/01.sort.t
+t/pod-coverage.t
+t/pod.t
+SIGNATURE                                Public-key signature (added by MakeMaker)
