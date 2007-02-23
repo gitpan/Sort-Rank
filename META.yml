@@ -1,9 +1,9 @@
 --- #YAML:1.0
 name:                Sort-Rank
-version:             v0.0.1
+version:             v0.0.2
 abstract:            Sort arrays by some score and organise into ranks.
-license:             ~
-generated_by:        ExtUtils::MakeMaker version 6.31
+license:             perl
+generated_by:        ExtUtils::MakeMaker version 6.32
 distribution_type:   module
 requires:     
     Test::More:                    0

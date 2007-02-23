@@ -5,68 +5,73 @@ use strict;
 use Carp;
 
 require Exporter;
-our @ISA = qw(Exporter);
+our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw(rank_sort rank_group);
 
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = qv( '0.0.2' );
 
 sub rank_group {
     my $array   = shift;
     my $extract = shift;
 
-    if (ref($array) eq 'HASH') {
+    if ( ref( $array ) eq 'HASH' ) {
+
         # Turn a hash into an array
         my @a = map { [ $_, $array->{$_} ] } keys %$array;
         $array = \@a;
     }
 
     croak "rank_sort needs an array reference"
-        unless ref $array eq 'ARRAY';
+      unless ref $array eq 'ARRAY';
 
     # Default score extraction sub
     $extract ||= sub {
         my $item = shift;
         croak "Array item must be a hash with a key called 'score'."
-            unless ref($item) eq 'HASH' && exists $item->{score};
+          unless ref( $item ) eq 'HASH' && exists $item->{score};
         return $item->{score};
     };
 
     croak "Key extractor must be a code ref"
-        unless ref($extract) eq 'CODE';
+      unless ref( $extract ) eq 'CODE';
 
     my $pos = 1;
-    my @ar =    sort {
-                    # Sort on score then original position
-                    $b->[0] <=> $a->[0] ||
-                    $a->[1] <=> $b->[1]
-                }
-                map {
-                    # Build array of score, original position, value
-                    [ $extract->($_), $pos++, $_ ]
-                } @$array;
+    my @ar  = sort {
 
-    my @out = ( );
-    for my $i (0 .. $#ar) {
+        # Sort on score then original position
+        $b->[0] <=> $a->[0]
+          || $a->[1] <=> $b->[1]
+      }
+      map {
+
+        # Build array of score, original position, value
+        [ $extract->( $_ ), $pos++, $_ ]
+      } @$array;
+
+    my @out = ();
+    for my $i ( 0 .. $#ar ) {
+
         # Need to start a new chunk?
-        if ($i == 0 || $ar[$i]->[0] != $ar[$i-1]->[0]) {
+        if ( $i == 0 || $ar[$i]->[0] != $ar[ $i - 1 ]->[0] ) {
             push @out, [ $i + 1 ];
         }
+
         # Add item to current chunk
-        push @{$out[-1]}, $ar[$i]->[2];
+        push @{ $out[-1] }, $ar[$i]->[2];
     }
 
     return wantarray ? @out : \@out;
 }
 
 sub rank_sort {
-    my @grp = rank_group(@_);
-    my @out = ( );
+    my @grp = rank_group( @_ );
+    my @out = ();
 
     # Unwrap groups
-    for my $g (@grp) {
+    for my $g ( @grp ) {
         my $rank = shift @$g;
-        my $many = (@$g > 1) ? '=' : '';
-        for my $i (@$g) {
+        my $many = ( @$g > 1 ) ? '=' : '';
+        for my $i ( @$g ) {
             push @out, [ $rank, $many, $i ];
         }
     }
@@ -83,7 +88,7 @@ Sort::Rank - Sort arrays by some score and organise into ranks.
 
 =head1 VERSION
 
-This document describes Sort::Rank version 0.0.1
+This document describes Sort::Rank version 0.0.2
 
 =head1 SYNOPSIS
 
@@ -128,8 +133,8 @@ score are grouped together by rank like this:
     ========================
 
 This module takes care of the (slightly) tricky business of organising
-an array of items each of which has some numeric element representing
-some score into rank order in this way.
+an array of items each of which has a numeric element representing a
+score into rank order in this way.
 
 Two exportable functions are provided C<rank_sort> and C<rank_group>.
 They both take the same parameters and differ only in the format of the
